@@ -21,9 +21,9 @@ let webpackConfig = {
     output: {
         path: path.join(__dirname, 'dist'),
         // [name] 在entry中的键
-        filename: 'js/index.js',
+        filename: 'js/Index.js',
         // 绝对路径位置
-        publicPath: 'http://localhost:3000/'
+        publicPath: 'http://localhost:3000/'// /react-express-Automatic-refresh/dist/
     },
     // webpack-dev-server 配置
     devServer: {
@@ -59,16 +59,16 @@ let webpackConfig = {
             {
                 test: /\.(less|css)$/,
                 // 第一个参数为 如果没有解析到的文件用什么去解析 第二个参数位解析less的
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader?modules&localIdentName=[local]-[hash:base64:16]!less-loader!postcss-loader")
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader?modules&localIdentName=[local]-[hash:8]!less-loader!postcss-loader")
             },
             {
                 test: /\.(jpe?g|png|gif|svg)$/,
                 // 如果文件小于8kb那么则用base64方式添加到页面中  大于则放到name设置的文件夹中
-                loader: 'url-loader?limit=8192&name=images/[hash].[name].[ext]'
+                loader: 'url-loader?limit=8192&name=images/[hash:32].[ext]'
             },
             {
                 test: /\.(woff|eot|ttf)\??.*$/,
-              loader: 'url-loader?name=fonts/[hash].[name].[ext]'
+                loader: 'url-loader?name=fonts/[hash:32].[ext]'
             },
         ]
     },
@@ -88,7 +88,7 @@ let webpackConfig = {
     ]
 };
 
-if ('development' === process.env.NODE_ENV) {
+if ('produce' === process.env.NODE_ENV) {
     // 压缩js
     webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin({
         output: {
@@ -99,8 +99,11 @@ if ('development' === process.env.NODE_ENV) {
         }
     }))
 } else {
-    for (let key of Object.keys(webpackConfig.entry)) {
-        webpackConfig.entry[key] = [webpackConfig.entry[key], 'webpack-hot-middleware/client?reload=true']
+    // for (let key of Object.keys(webpackConfig.entry)) {
+    //     webpackConfig.entry[key] = [webpackConfig.entry[key], 'webpack-hot-middleware/client?reload=true']
+    // }
+    for (let [key, value] of Object.entries(webpackConfig.entry)) {
+        webpackConfig.entry[key] = [value, 'webpack-hot-middleware/client?reload=true']
     }
     // 显示更多信息
     webpackConfig.devtool = 'eval-source-map';

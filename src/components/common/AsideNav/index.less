@@ -1,0 +1,56 @@
+@color-default: #848484;
+
+#asideNav{
+  float: left;
+  position: relative;
+  z-index:1;
+  width:200px;
+  height:100%;
+  background: #404040;
+  font-size:12px;
+  color: @color-default;
+  
+  h1{
+    padding:10px 0;
+    background: #222;
+    font-size:14px;
+    text-align: center;
+  }
+
+  dt, a{
+    height:40px;
+    line-height:40px;
+  }
+  
+  dt{
+    background: #404040;
+    text-indent:40px;
+    cursor: pointer;
+    transition: all .3s;
+    
+    &:hover, &.selected{
+      color: #fff;
+    }
+  }
+  
+  dd{
+    display: none;
+    a{
+      display: block;
+      background: #333;
+      text-indent:50px;
+      color: @color-default;
+      cursor: pointer;
+      transition: all .3s;
+
+      &:hover{
+        color: #fff;
+      }
+      
+      &.selected{
+        color: #fff;
+        background: #108ee9;
+      }
+    }
+  }
+}

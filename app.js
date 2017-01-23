@@ -5,10 +5,14 @@ const http = require('http'),
       logger = require('morgan'),
       cookieParser = require('cookie-parser'),
       bodyParser = require('body-parser'),
-      hbs = require('hbs');
+      hbs = require('hbs'),
+      mongoose = require('mongoose');
 
 const port = process.env.PORT || 3000,
       isDev = process.env.NODE_ENV !== 'production';
+
+mongoose.connect('mongodb://localhost/laoniu');
+mongoose.Promise = Promise;
 
 let app = express();
 
@@ -38,9 +42,7 @@ if (isDev) {
   }));
   app.use(webpackHotMiddleware(compiler));
 
-  app.get('/', (req, res) => {
-    res.render('index');
-  });
+  require('./server/routes/index')(app);
 
   const bs = require('browser-sync').create();
 
@@ -58,9 +60,9 @@ if (isDev) {
 
 } else {
   app.use(express.static(path.join(__dirname, 'dist')));
-  app.use((req, res) => {
-    res.render('index');
-  });
+
+  require('./server/routes/index')(app);
+
   app.listen(port, function () {
     console.log('App (production) is now running on port 3000!');
   });
