@@ -23,7 +23,7 @@ let webpackConfig = {
         // [name] 在entry中的键
         filename: 'js/Index.js',
         // 绝对路径位置
-        publicPath: 'http://localhost:3000/'// /react-express-Automatic-refresh/dist/
+        publicPath: 'http://localhost:3000/'
     },
     // webpack-dev-server 配置
     devServer: {
@@ -98,6 +98,8 @@ if ('produce' === process.env.NODE_ENV) {
             warnings: false
         }
     }))
+} else if ('github' === process.env.NODE_ENV) {
+    webpackConfig.output.publicPath = '/react-express-Automatic-refresh/dist/';
 } else {
     // for (let key of Object.keys(webpackConfig.entry)) {
     //     webpackConfig.entry[key] = [webpackConfig.entry[key], 'webpack-hot-middleware/client?reload=true']
@@ -110,5 +112,6 @@ if ('produce' === process.env.NODE_ENV) {
     webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
     webpackConfig.plugins.push(new webpack.NoErrorsPlugin());
 }
+
 
 module.exports = webpackConfig;

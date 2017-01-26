@@ -5,7 +5,22 @@ import $ from 'jquery';
 
 import s from './index.less';
 
-export default class Login extends Component {
+class User extends Component {
+  constructor (props) {
+    super(props);
+  }
+  render () {
+    return (
+      <div className="user">
+        <div>{this.props.user.name}</div>
+        <div>{this.props.user.age}</div>
+        <div>{this.props.user.sex ? '男' : '女'}</div>
+      </div>
+    )
+  }
+}
+
+class Logins extends Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -15,8 +30,8 @@ export default class Login extends Component {
   }
   render () {
     return (
-      <div id={s.login}>
-        <div className={s.layout}>
+      <div className="user">
+        <div className="login">
           <input ref={n => {this.nameNode = n}} value="小伙子" type="text" placeholder="用户名" onBlur={this.judgeName.bind(this)}/>
           <div className={s.prompt} style={{
             visibility: this.state.judgeName === true ? 'hidden' : 'visible'
@@ -40,6 +55,7 @@ export default class Login extends Component {
     });
   }
   login () {
+    let self = this;
     $.ajax({
       url: '/login',
       type: 'POST',
@@ -47,17 +63,38 @@ export default class Login extends Component {
         name: this.nameNode.value,
         password: this.passwordNode.value,
       },
-      //必须false才会自动加上正确的Content-Type
-      // contentType: false,
-      //必须false才会避开jQuery对 formdata 的默认处理
-      //XMLHttpRequest会对 formdata 进行正确的处理
-      // processData: false,
       success: function(data){
-        console.log(data, 'success')
+        if (!data.fail) {
+          self.props.onLogin(data);
+        }
       },
       error: function(error){
         console.log(error, 'error')
       }
     })
+  }
+}
+
+export default class Login extends Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      login: false,
+      user: {},
+    }
+  }
+  render () {
+    return (
+      <div id={s.login}>
+        <div className={s.layout}>
+          {this.state.login ? <User user={this.state.user}/> : <Logins onLogin={(data) => {
+            this.setState({
+              login: true,
+              user: data
+            })
+          }}/>}
+        </div>
+      </div>
+    )
   }
 }

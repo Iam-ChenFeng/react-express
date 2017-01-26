@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cross-env NODE_ENV=dev node app.js",
-    "build": "cross-env NODE_ENV=produce webpack --progress --colors"
+    "build": "cross-env NODE_ENV=produce webpack --progress --colors",
+    "github": "cross-env NODE_ENV=github webpack --progress --colors"
   },
   "author": "",
   "license": "ISC",
