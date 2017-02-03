@@ -97,8 +97,16 @@ if ('produce' === process.env.NODE_ENV) {
         compress: {
             warnings: false
         }
-    }))
+    }));
 } else if ('github' === process.env.NODE_ENV) {
+    webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin({
+        output: {
+            comments: false,
+        },
+        compress: {
+            warnings: false
+        }
+    }));
     webpackConfig.output.publicPath = '/react-express-Automatic-refresh/dist/';
 } else {
     // for (let key of Object.keys(webpackConfig.entry)) {

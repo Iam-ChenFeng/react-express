@@ -14,8 +14,10 @@ export default class FileCloud extends Component {
       url: this.props.params.splat ? this.props.params.splat : '',
       // 判断右击该显示是文件夹选项还是总选项
       judgmentRightClick: true,
-      // 所有文件显示
-      fileCloud: [],
+      // 文件数据
+      fileCloud: {},
+      // 文件数据显示
+      fileCloudDom: [],
     }
   }
   // props将要更新
@@ -56,10 +58,10 @@ export default class FileCloud extends Component {
           {this.position()}
         </div>
         <div id={s.file} onContextMenu={this.rightClickMenuShow.bind(this)}>
-          {this.state.fileCloud}
+          {this.state.fileCloudDom}
         </div>
         <div id={s.rightClickMenu} ref={(e) => {this.rightClickMenu = e}}>
-          <div onClick={this.addFile.bind(this, '新建文件夹5')}>新建文件夹</div>
+          <div onClick={this.addFile.bind(this)}>新建文件夹</div>
           <wrap style={{'display': this.state.judgmentRightClick ? 'none' : 'block',}}>
             <div>重命名</div>
             <div>删除</div>
@@ -97,34 +99,58 @@ export default class FileCloud extends Component {
         } else {
           let file = [];
           console.log(data);
-          for (let [key, val] of Object.entries(data)) {
-            file.push(
-              <Link key={key}
-                    to={`/fileCloud/${this.state.url == '' ? '' : this.state.url + '/'}${key}`}
-                    target={val != '' ? '_blank' : '_parent'}>
-                {val == '' ? <i className="iconfont">&#xe8ea;</i> : <i className="iconfont">&#xe798;</i>}
-                <div>{key}</div>
-              </Link>
-            )
+          if (data instanceof Object) {
+            for (let [key, val] of Object.entries(data)) {
+              file.push(
+                <Link key={key}
+                      to={`/fileCloud/${this.state.url == '' ? '' : this.state.url + '/'}${key}`}
+                      target={val == 'dir' ? '' : '_blank'}>
+                  {val == 'dir' ? <i className="iconfont">&#xe8ea;</i> : <i className="iconfont">&#xe798;</i>}
+                  <div>{key}</div>
+                </Link>
+              )
+            }
+            this.setState({
+              fileCloud: data,
+              fileCloudDom: file,
+            })
+          } else {
+            this.setState({
+              fileCloud: {},
+              fileCloudDom: [],
+            })
           }
-          this.setState({
-            fileCloud: file,
-          })
         }
       }).catch((err) => {
         console.log(err);
       })
   }
   // 添加文件夹
-  addFile (name) {
+  addFile () {
     let self = this;
-    $.post('/addFile', {'name': name})
-      .then((data) => {
-        console.log(data);
-        self.fileCloudQuery();
-      }).catch((err) => {
-        console.log(err);
-      })
+    let i = '';
+    // 创建文件名
+    function createFileName () {
+      let fileName = '新建文件夹';
+      fileName += i;
+      // 判断文件名是否重复
+      if (fileName in self.state.fileCloud) {
+        // 重复的时候序列号加一 之后重新调用 createFileName
+        i++;
+        createFileName();
+      } else {
+        if (i == '') {i = !!i}
+        $.post('/addFile', {'name': fileName, url: self.state.url})
+          .then((data) => {
+            if (!data.error) {
+              self.fileCloudQuery();
+            }
+          }).catch((err) => {
+            console.log(err);
+          })
+      }
+    }
+    createFileName();
   }
   // 右击显示菜单
   rightClickMenuShow (e) {
